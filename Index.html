@@ -1,0 +1,356 @@
+import IPython.display as display
+
+# HTML/CSS/JSコードを安全な文字列として定義
+html_code = """
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Noto+Serif+JP:wght@300;400;600&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            /* 紫紺色（しこんいろ）の背景 */
+            background-color: #1a0f2e;
+            color: #c5a059;
+            font-family: 'Noto Serif JP', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* 横長・美術館スタイルのパネル */
+        .museum-container {
+            width: 100%;
+            max-width: 680px;
+            background: linear-gradient(145deg, #150b24, #0d0618);
+            border: 1px solid #c5a059;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(197, 160, 89, 0.25);
+            padding: 30px 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .museum-header {
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(197, 160, 89, 0.3);
+            padding-bottom: 15px;
+        }
+
+        .museum-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.25rem;
+            letter-spacing: 6px;
+            color: #e5c158;
+            text-transform: uppercase;
+        }
+
+        .museum-subtitle {
+            font-size: 0.85rem;
+            color: #a39bb8;
+            margin-top: 6px;
+            letter-spacing: 3px;
+        }
+
+        .display-section {
+            background: #090412;
+            border: 1px solid rgba(197, 160, 89, 0.4);
+            padding: 18px;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .password-display {
+            font-family: 'Cinzel', monospace;
+            font-size: 2.8rem;
+            letter-spacing: 20px;
+            color: #ffffff;
+            min-height: 55px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-left: 20px;
+        }
+
+        .message-box {
+            font-size: 0.9rem;
+            min-height: 22px;
+            margin-top: 8px;
+            color: #a39bb8;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            background: linear-gradient(145deg, #24163d, #160d28);
+            border: 1px solid rgba(197, 160, 89, 0.35);
+            color: #e5c158;
+            font-family: 'Cinzel', serif;
+            font-size: 1.35rem;
+            padding: 14px 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .btn:hover {
+            border-color: #e5c158;
+            box-shadow: 0 0 10px rgba(197, 160, 89, 0.3);
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+            background: #c5a059;
+            color: #0b0c10;
+        }
+
+        .btn-action {
+            font-family: 'Noto Serif JP', serif;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .btn-enter {
+            grid-column: span 3;
+            background: linear-gradient(145deg, #3d2c14, #24190b);
+            border: 1px solid #c5a059;
+            font-size: 1.1rem;
+            padding: 14px 0;
+            margin-top: 5px;
+            letter-spacing: 2px;
+        }
+
+        .timer-box {
+            font-size: 0.85rem;
+            color: #c5a059;
+            margin-top: 15px;
+            min-height: 20px;
+            letter-spacing: 1px;
+        }
+
+        .success {
+            border-color: #2ecc71 !important;
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.5);
+        }
+        .success .password-display { color: #2ecc71; }
+
+        .error {
+            border-color: #e74c3c !important;
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.5);
+            animation: shake 0.4s ease-in-out;
+        }
+        .error .password-display { color: #e74c3c; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="museum-container">
+    <div class="museum-header">
+        <div class="museum-title">SECURITY SYSTEM</div>
+        <div class="museum-subtitle">Angel美術館 暗証解錠装置</div>
+    </div>
+
+    <div class="display-section" id="display-section">
+        <div class="password-display" id="display">----</div>
+        <div class="message-box" id="message">暗証番号を入力してください</div>
+    </div>
+
+    <div class="keypad">
+        <button class="btn" onclick="pressNum('1')">1</button>
+        <button class="btn" onclick="pressNum('2')">2</button>
+        <button class="btn" onclick="pressNum('3')">3</button>
+        <button class="btn" onclick="pressNum('4')">4</button>
+        <button class="btn" onclick="pressNum('5')">5</button>
+        <button class="btn" onclick="pressNum('6')">6</button>
+        <button class="btn" onclick="pressNum('7')">7</button>
+        <button class="btn" onclick="pressNum('8')">8</button>
+        <button class="btn" onclick="pressNum('9')">9</button>
+        <button class="btn btn-action" onclick="clearInput()">消去</button>
+        <button class="btn" onclick="pressNum('0')">0</button>
+        <button class="btn btn-action" onclick="deleteLast()">←</button>
+        <button class="btn btn-enter" onclick="checkPassword()">確定 [ENTER]</button>
+    </div>
+
+    <div class="timer-box" id="timer-box"></div>
+</div>
+
+<script>
+    const CORRECT_PASS = "6453";
+    let inputPass = "";
+    let isLocked = false;
+    let timerInterval = null;
+    let audioCtx = null;
+
+    function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+    }
+
+    function playNote(freq, startTime, duration, vol, type) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = type || 'sine';
+        osc.frequency.setValueAtTime(freq, startTime);
+
+        gain.gain.setValueAtTime(vol, startTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(startTime);
+        osc.stop(startTime + duration);
+    }
+
+    // 正解音：大音量「ピンポン」×2回（2秒間）
+    function playSuccessSound() {
+        initAudio();
+        if(!audioCtx) return;
+
+        const now = audioCtx.currentTime;
+        playNote(659.25, now, 0.25, 1.0, 'sine');
+        playNote(880.00, now + 0.2, 0.7, 1.0, 'sine');
+
+        playNote(659.25, now + 1.0, 0.25, 1.0, 'sine');
+        playNote(880.00, now + 1.2, 0.7, 1.0, 'sine');
+    }
+
+    // 不正解音：大音量「ブッ・ブッ・ブッ・ブッ」×4連打（2秒間）
+    function playErrorSound() {
+        initAudio();
+        if(!audioCtx) return;
+
+        const now = audioCtx.currentTime;
+        for (let i = 0; i < 4; i++) {
+            const startTime = now + (i * 0.5);
+            playNote(130, startTime, 0.35, 1.0, 'sawtooth');
+        }
+    }
+
+    function updateDisplay() {
+        const display = document.getElementById('display');
+        display.textContent = inputPass.padEnd(4, '-');
+    }
+
+    function pressNum(num) {
+        initAudio();
+        if (isLocked) return;
+        if (inputPass.length < 4) {
+            inputPass += num;
+            updateDisplay();
+        }
+    }
+
+    function clearInput() {
+        initAudio();
+        if (isLocked) return;
+        inputPass = "";
+        updateDisplay();
+    }
+
+    function deleteLast() {
+        initAudio();
+        if (isLocked) return;
+        inputPass = inputPass.slice(0, -1);
+        updateDisplay();
+    }
+
+    function checkPassword() {
+        initAudio();
+        if (isLocked || inputPass.length === 0) return;
+
+        isLocked = true;
+        const displaySection = document.getElementById('display-section');
+        const message = document.getElementById('message');
+
+        if (inputPass === CORRECT_PASS) {
+            displaySection.classList.add('success');
+            message.textContent = "解錠に成功しました";
+            message.style.color = "#2ecc71";
+            playSuccessSound();
+        } else {
+            displaySection.classList.add('error');
+            message.textContent = "暗証番号が正しくありません";
+            message.style.color = "#e74c3c";
+            playErrorSound();
+        }
+
+        startResetTimer(5);
+    }
+
+    function startResetTimer(seconds) {
+        const timerBox = document.getElementById('timer-box');
+        let timeLeft = seconds;
+        timerBox.textContent = "自動リセットまで : " + timeLeft + "秒";
+
+        timerInterval = setInterval(function() {
+            timeLeft--;
+            if (timeLeft > 0) {
+                timerBox.textContent = "自動リセットまで : " + timeLeft + "秒";
+            } else {
+                clearInterval(timerInterval);
+                resetSystem();
+            }
+        }, 1000);
+    }
+
+    function resetSystem() {
+        const displaySection = document.getElementById('display-section');
+        const message = document.getElementById('message');
+        const timerBox = document.getElementById('timer-box');
+
+        inputPass = "";
+        isLocked = false;
+        displaySection.classList.remove('success', 'error');
+        message.textContent = "暗証番号を入力してください";
+        message.style.color = "#a39bb8";
+        timerBox.textContent = "";
+        updateDisplay();
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key >= '0' && e.key <= '9') {
+            pressNum(e.key);
+        } else if (e.key === 'Enter') {
+            checkPassword();
+        } else if (e.key === 'Backspace') {
+            deleteLast();
+        } else if (e.key === 'Escape') {
+            clearInput();
+        }
+    });
+</script>
+
+</body>
+</html>
+"""
+
+# HTMLをColab上で直接レンダリング
+display.display(display.HTML(html_code))
