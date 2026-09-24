@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Noto+Serif+JP:wght@300;400;600&display=swap');
 
@@ -19,15 +20,18 @@
             font-family: 'Noto Serif JP', serif;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
+            min-height: 100dvh;
             padding: 20px;
+            overflow-x: hidden;
         }
 
         /* 横長・美術館スタイルのパネル */
         .museum-container {
             width: 100%;
             max-width: 680px;
+            margin: 20px auto;
             background: linear-gradient(145deg, #150b24, #0d0618);
             border: 1px solid #c5a059;
             box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(197, 160, 89, 0.25);
@@ -44,10 +48,11 @@
 
         .museum-title {
             font-family: 'Cinzel', serif;
-            font-size: 1.25rem;
-            letter-spacing: 6px;
+            font-size: clamp(0.9rem, 4vw, 1.25rem);
+            letter-spacing: clamp(2px, 1.5vw, 6px);
             color: #e5c158;
             text-transform: uppercase;
+            white-space: nowrap;
         }
 
         .museum-subtitle {
@@ -67,8 +72,8 @@
 
         .password-display {
             font-family: 'Cinzel', monospace;
-            font-size: 2.8rem;
-            letter-spacing: 20px;
+            font-size: clamp(1.8rem, 10vw, 2.8rem);
+            letter-spacing: clamp(8px, 4vw, 20px);
             color: #ffffff;
             min-height: 55px;
             display: flex;
@@ -157,6 +162,26 @@
             0%, 100% { transform: translateX(0); }
             20%, 60% { transform: translateX(-8px); }
             40%, 80% { transform: translateX(8px); }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .museum-container {
+                margin: 10px auto;
+                padding: 24px 16px;
+            }
+
+            .keypad {
+                gap: 8px;
+            }
+
+            .btn {
+                font-size: 1.1rem;
+                padding: 12px 0;
+            }
         }
     </style>
 </head>
@@ -346,7 +371,3 @@
 
 </body>
 </html>
-"""
-
-# HTMLをColab上で直接レンダリング
-display.display(display.HTML(html_code))
